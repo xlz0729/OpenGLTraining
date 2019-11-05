@@ -76,6 +76,5 @@ void Shader::mCheckCompileErrors(uint shaderProgram, uint status)
     if (!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER >>> log info: " << infoLog << std::endl;
-        m_status &= false;
     }
 }

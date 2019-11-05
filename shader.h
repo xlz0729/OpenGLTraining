@@ -16,8 +16,8 @@
 #include <fstream>
 #include <sstream>
 
-#include "define.h"
-#include "const.h"
+#include "common/define.h"
+#include "common/const.h"
 
 
 class Shader
@@ -27,9 +27,9 @@ public:
     
     ~Shader() {}
     
-    inline bool GetStatus() { return m_status; }
+    inline void UseProgram() { glUseProgram(m_shader); }
     
-    inline unit& GetShader() { return m_shader; }
+    inline int GetUniformLocation(const char* name) { return glGetUniformLocation(m_shader, name); }
     
 private:
     // Read content from file and output it by const char*
@@ -38,7 +38,6 @@ private:
     void mCheckCompileErrors(uint shaderProgram, uint status);
 
 private:
-    bool m_status = true;
     unit m_shader = -1;
 };
 

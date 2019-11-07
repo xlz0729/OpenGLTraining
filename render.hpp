@@ -27,109 +27,93 @@ public:
         m_EBO = -1;
     }
     
-    ~Render() {}
+    ~Render()
+    {
+        // de-allocate all resources once they've outlived their purpose:
+        glDeleteVertexArrays(1, &m_VAO);
+        glDeleteBuffers(1, &m_VBO);
+        glDeleteBuffers(1, &m_EBO);
+    }
     
-    void SimpleInitBuffer() {
-        GenBuffer();
-        BindVertexArray();
-        BindVertexBuffer();
-        BindElementBuffer();
-        SetPositionAttr();
-        SetColorAttr();
+    void SimpleInitBuffer()
+    {
+        // step 0: create a shader
+        m_shader.reset(new Shader(VERTEX_SHADER, FRAGMENT_SHADER));
         
-        CreateShader();
-    }
-    
-    //
-    inline void GenBuffer() {
-        // init OpenGL
-        glGenBuffers(1, &m_VBO);
+        // step 1: bind the Vertex Array Object
         glGenVertexArrays(1, &m_VAO);
-        glGenBuffers(1, &m_EBO);
-    }
-    // step 1: bind the Vertex Array Object
-    inline void BindVertexArray () { glBindVertexArray(m_VAO); }
-    // step 2: copy Vertex Array to Vertex Buffer
-    inline void BindVertexBuffer() {
+        glBindVertexArray(m_VAO);
+        
+        // step 2: copy Vertex Array to Vertex Buffer
+        glGenBuffers(1, &m_VBO);
         glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
         glBufferData(GL_ARRAY_BUFFER, m_vertices_size, m_vertices, GL_STATIC_DRAW);
-    }
-    // step 3: copy Element Array to Element Buffer
-    inline void BindElementBuffer() {
+        
+        // step 3: copy Element Array to Element Buffer
+        glGenBuffers(1, &m_EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices_size, m_indices, GL_STATIC_DRAW);
-    }
-    // step 4: set position attribute
-    inline void SetPositionAttr() {
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
-    }
-    // step 5: set color attribute
-    inline void SetColorAttr() {
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
-        glEnableVertexAttribArray(1);
-    }
         
-    // Create shader program
-    inline void CreateShader() { m_shader.reset(new Shader("simple", "simple")); }
+        // step 4: set position attribute
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        
+        // step 5: set color attribute
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
+        glEnableVertexAttribArray(1);
+        
+        // step 6: set texture coord attribute
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+        
+        // step 7: load and create a texture
+        glGenTextures(1, &m_tex);
+        glBindTexture(GL_TEXTURE_2D, m_tex);
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // load image, create texture and generate mipmaps
+        mLoadTextureImg();
+    }
     
-    //
     void DoRender()
     {
         glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
+        // bind Texture
+        glBindTexture(GL_TEXTURE_2D, m_tex);
         m_shader->UseProgram();
-        mRenderEBO();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
     
-    //
-    inline void SetVertices(uint size, const float* vertices) {
+    void SetVertices(uint size, const float* vertices)
+    {
         m_vertices_size = size;
         m_vertices = vertices;
     }
-    //
-    inline void SetIndices(uint size, const uint* indices) {
+
+    void SetIndices(uint size, const uint* indices)
+    {
         m_indices_size = size;
         m_indices = indices;
     }
+
     // 设置绘制模式
     inline void SetPolygonMod(GLenum face, GLenum mode) { glPolygonMode(face, mode); }
 
-    // de-allocate all resources once they've outlived their purpose:
-    inline void DeleteVertexArrays() { glDeleteVertexArrays(1, &m_VAO); }
-    //
-    inline void DeleteBuffers() { glDeleteBuffers(1, &m_VBO); }
-    
 private:
-    void UpdateShaderUniform() {
-        float timeValue = glfwGetTime();
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        float redValue = (cos(timeValue) / 2.0f) + 0.5f;
-        float blueValue = (sin(timeValue + M_PI/4.0f) / 2.0f) + 0.5f;
-
-        // Note that finding the uniform location does not require you to use the shader program first.
-        int vertexColorLocation = m_shader->GetUniformLocation("ourColor");
-        
-        // Note that updating a uniform does require you to first use the program (by calling glUseProgram),
-        // because it sets the uniform on the currently active shader program.
-        glUniform4f(vertexColorLocation, redValue, greenValue, blueValue, 1.0f);
-    }
+    void mLoadTextureImg();
     
-    void mRenderVAO() {
-        glBindVertexArray(m_VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-    }
-    
-    void mRenderEBO() {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-    }
-
 private:
     GLuint m_VBO;
     GLuint m_VAO;
     GLuint m_EBO;
+    GLuint m_tex;
     
     std::shared_ptr<Shader> m_shader;
     

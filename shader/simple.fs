@@ -1,12 +1,12 @@
 #version 330 core
-
-//uniform vec4 ourColor;  // we set this variable in the OpenGL code.
-
-in vec4 vertexColor;
-
 out vec4 FragColor;
+  
+in vec3 ourColor;
+in vec2 TexCoord;
+
+uniform sampler2D ourTexture;
 
 void main()
 {
-    FragColor = vertexColor;
+    FragColor = texture(ourTexture, TexCoord);
 }

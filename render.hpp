@@ -14,6 +14,8 @@
 
 #include <math.h>
 
+#include <vector>
+
 #include "common/define.h"
 #include "shader.h"
 
@@ -67,8 +69,10 @@ public:
         glEnableVertexAttribArray(2);
         
         // step 7: load and create a texture
-        glGenTextures(1, &m_tex);
-        glBindTexture(GL_TEXTURE_2D, m_tex);
+        // first texture
+        GLuint tex1;
+        glGenTextures(1, &tex1);
+        glBindTexture(GL_TEXTURE_2D, tex1);
         // set the texture wrapping parameters
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -76,16 +80,40 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // load image, create texture and generate mipmaps
-        mLoadTextureImg();
+        mLoadTextureImg("container.jpg");
+        m_texs.push_back(tex1);
+        
+        // second texture
+        GLuint tex2;
+        glGenTextures(1, &tex2);
+        glBindTexture(GL_TEXTURE_2D, tex2);
+        // set the texture wrapping parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        // set texture filtering parameters
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        // load image, create texture and generate mipmaps
+        mLoadTextureImg("awesomeface.png", GL_RGBA);
+        m_texs.push_back(tex2);
+        
+        // have to use the shader before setting uniforms!
+        m_shader->UseProgram();
+        m_shader->SetInt("texture1", 0);
+        m_shader->SetInt("texture2", 1);
     }
     
     void DoRender()
     {
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         
-        // bind Texture
-        glBindTexture(GL_TEXTURE_2D, m_tex);
+        // bind textures on corresponding texture units
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_texs[0]);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, m_texs[1]);
+
         m_shader->UseProgram();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -107,13 +135,13 @@ public:
     inline void SetPolygonMod(GLenum face, GLenum mode) { glPolygonMode(face, mode); }
 
 private:
-    void mLoadTextureImg();
+    void mLoadTextureImg(std::string texture_name, GLenum format = GL_RGB);
     
 private:
     GLuint m_VBO;
     GLuint m_VAO;
     GLuint m_EBO;
-    GLuint m_tex;
+    std::vector<GLuint> m_texs;
     
     std::shared_ptr<Shader> m_shader;
     

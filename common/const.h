@@ -21,6 +21,5 @@ extern std::string FRAGMENT_SHADER;
 // ------ texture attribute ------
 // texture's absolute path depended on your own os.
 extern std::string TEXTURE_DIR;
-extern std::string TEXTURE_NAME;
 
 #endif /* const_h */

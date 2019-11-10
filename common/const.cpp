@@ -15,4 +15,3 @@ std::string FRAGMENT_SHADER = "simple.fs";
 
 
 std::string TEXTURE_DIR = "/Users/xulizi/code/OpenGLTraining/OpenGLTraining/texture/";
-std::string TEXTURE_NAME = "container.jpg";

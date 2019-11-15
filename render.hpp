@@ -188,6 +188,7 @@ private:
     uint            m_vertices_size;
     uint            m_indices_size;
     
+    // 暂时用于输出多个矩形，之后会删除
     std::vector<glm::vec3> m_cube_positions;
 };
 

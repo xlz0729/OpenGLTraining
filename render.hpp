@@ -27,6 +27,17 @@ public:
         m_VBO = -1;
         m_VAO = -1;
         m_EBO = -1;
+        
+        m_cube_positions.push_back(glm::vec3( 0.0f,  0.0f,  0.0f));
+        m_cube_positions.push_back(glm::vec3( 2.0f,  5.0f, -15.0f));
+        m_cube_positions.push_back(glm::vec3(-1.5f, -2.2f, -2.5f));
+        m_cube_positions.push_back(glm::vec3(-3.8f, -2.0f, -12.3f));
+        m_cube_positions.push_back(glm::vec3( 2.4f, -0.4f, -3.5f));
+        m_cube_positions.push_back(glm::vec3(-1.7f,  3.0f, -7.5f));
+        m_cube_positions.push_back(glm::vec3( 1.3f, -2.0f, -2.5f));
+        m_cube_positions.push_back(glm::vec3( 1.5f,  2.0f, -2.5f));
+        m_cube_positions.push_back(glm::vec3( 1.5f,  0.2f, -1.5f));
+        m_cube_positions.push_back(glm::vec3(-1.3f,  1.0f, -1.5f));
     }
     
     ~Render()
@@ -39,6 +50,8 @@ public:
     
     void SimpleInitBuffer()
     {
+        glEnable(GL_DEPTH_TEST);
+        
         // step 0: create a shader
         m_shader.reset(new Shader(VERTEX_SHADER, FRAGMENT_SHADER));
         
@@ -57,16 +70,16 @@ public:
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices_size, m_indices, GL_STATIC_DRAW);
         
         // step 4: set position attribute
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         
         // step 5: set color attribute
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
-        glEnableVertexAttribArray(1);
+//        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3* sizeof(float)));
+//        glEnableVertexAttribArray(1);
         
         // step 6: set texture coord attribute
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
         
         // step 7: load and create a texture
         // first texture
@@ -101,12 +114,14 @@ public:
         m_shader->UseProgram();
         m_shader->SetInt("texture1", 0);
         m_shader->SetInt("texture2", 1);
+        
+        mProjectionTransformation();
     }
     
     void DoRender()
     {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
@@ -115,8 +130,27 @@ public:
         glBindTexture(GL_TEXTURE_2D, m_texs[1]);
 
         m_shader->UseProgram();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        
+        // transform
+        mCoordinateTransformation();
+        
+        // render container
+//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+//        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(m_VAO);
+//        glDrawArrays(GL_TRIANGLES, 0, 36);
+        
+        int i = 0;
+        for(auto position : m_cube_positions)
+        {
+          glm::mat4 model = glm::mat4(1.0f);
+          model = glm::translate(model, position);
+          float angle = 20.0f * i++;
+          model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+          m_shader->SetMat4("model", model);
+
+          glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
     }
     
     void SetVertices(uint size, const float* vertices)
@@ -137,6 +171,10 @@ public:
 private:
     void mLoadTextureImg(std::string texture_name, GLenum format = GL_RGB);
     
+    void mCoordinateTransformation();
+    
+    void mProjectionTransformation();
+    
 private:
     GLuint m_VBO;
     GLuint m_VAO;
@@ -149,6 +187,8 @@ private:
     const uint*     m_indices;
     uint            m_vertices_size;
     uint            m_indices_size;
+    
+    std::vector<glm::vec3> m_cube_positions;
 };
 
 #endif /* render_hpp */

@@ -29,3 +29,33 @@ void Render::mLoadTextureImg(std::string texture_name, GLenum format)
     }
     stbi_image_free(data);
 }
+
+// 坐标变换
+void Render::mCoordinateTransformation()
+{
+    // create transformations
+    // local transformation
+    glm::mat4 transform = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
+    transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+    // model transformation
+//    glm::mat4 model = glm::mat4(1.0f);
+//    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // view transformation
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f)); // 注意，我们将矩阵向我们要进行移动场景的反方向移动。
+    
+    
+    m_shader->SetMat4("transform", transform);
+//    m_shader->SetMat4("model", model);
+    m_shader->SetMat4("view", view);
+}
+
+// 视窗变换，这里决定了是透视矩阵还是正交矩阵，透视矩阵的FOV也应当在这里设置
+void Render::mProjectionTransformation()
+{
+    // projection transformation
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGH, 0.1f, 100.0f); // 透视矩阵
+    // projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f); // 正交矩阵
+    m_shader->SetMat4("projection", projection);
+}

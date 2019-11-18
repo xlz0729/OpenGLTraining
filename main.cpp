@@ -9,6 +9,7 @@
 #include <iostream>
 
 #include "render.hpp"
+#include "camera.h"
 #include "common/const.h"
 #include "common/define.h"
 
@@ -29,6 +30,19 @@ void ProcessInput(GLFWwindow *window)
     // 检测按键 GLFW_KEY_ESCAPE 是否被按下
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
+    
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        g_Camera->MoveCameraForward(g_DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        g_Camera->MoveCameraBackward(g_DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        g_Camera->MoveCameraLeftward(g_DeltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        g_Camera->MoveCameraRightward(g_DeltaTime);
     }
 }
 
@@ -67,6 +81,9 @@ int main(int argc, const char * argv[])
     std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
     std::cout << "GLSL Version:" << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
     std::cout << "-----------------------------------------------------" << std::endl;
+    
+    // 初始化摄像机
+    g_Camera.reset(new Camera());
     
 //    float vertices[] = {
 //        // positions          // colors           // texture coords
@@ -141,6 +158,8 @@ int main(int argc, const char * argv[])
         glfwSwapBuffers(window);
         glfwPollEvents();           // 检测是否触发什么事件，并调用对应的回调函数
     }
+    
+    g_Camera = nullptr;
     
     // glfw: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();

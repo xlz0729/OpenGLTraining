@@ -18,6 +18,7 @@
 
 #include "common/define.h"
 #include "shader.h"
+#include "camera.h"
 
 class Render
 {
@@ -131,15 +132,17 @@ public:
 
         m_shader->UseProgram();
         
-        // transform
-        mCoordinateTransformation();
-        
         // render container
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 //        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
         glBindVertexArray(m_VAO);
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
         
+        mCoordinateTransformation();
+        
+        g_Camera->UpdateViewMatrix();
+        m_shader->SetMat4("view", g_Camera->GetViewMatrix());
+
         int i = 0;
         for(auto position : m_cube_positions)
         {
@@ -151,6 +154,10 @@ public:
 
           glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+        
+        float currentFrame = glfwGetTime();
+        g_DeltaTime = currentFrame - g_LastFrame;
+        g_LastFrame = currentFrame;
     }
     
     void SetVertices(uint size, const float* vertices)

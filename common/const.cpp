@@ -23,3 +23,9 @@ std::unique_ptr<Camera> g_Camera;
 float g_DeltaTime = 0.0f;   // 当前帧与上一帧的时间差
 float g_LastFrame = 0.0f;   // 上一帧的时间
 float g_FPS = 60.0;         // 帧率
+
+
+float g_Sensitivity = 0.05f;
+float g_LastX = 400;
+float g_LastY = 300;
+bool  g_FirstMouse = true;

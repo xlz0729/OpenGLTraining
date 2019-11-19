@@ -22,6 +22,35 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int heigh)
     glViewport(0, 0, width, heigh);
 }
 
+// glfw: whenever the mouse moves, this callback is called
+// -------------------------------------------------------
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (g_FirstMouse) {
+        g_LastX = xpos;
+        g_LastY = ypos;
+        g_FirstMouse = false;
+        return;
+    }
+
+    float xoffset = xpos - g_LastX;
+    float yoffset = g_LastY - ypos; // 注意这里是相反的，因为y坐标是从底部往顶部依次增大的
+    g_LastX = xpos;
+    g_LastY = ypos;
+
+    xoffset *= g_Sensitivity;
+    yoffset *= g_Sensitivity;
+    
+    g_Camera->UpdateYawPitch(xoffset, yoffset);
+}
+
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    g_Camera->UpdateFOV(yoffset);
+}
+
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 void ProcessInput(GLFWwindow *window)
@@ -67,6 +96,11 @@ int main(int argc, const char * argv[])
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+    
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {

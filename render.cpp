@@ -46,7 +46,7 @@ void Render::mProjectionTransformation()
 {
     // projection transformation
     glm::mat4 projection = glm::mat4(1.0f);
-    projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / (float)WINDOW_HEIGH, 0.1f, 100.0f); // 透视矩阵
+    projection = glm::perspective(glm::radians(g_Camera->GetFOV()), (float)WINDOW_WIDTH / (float)WINDOW_HEIGH, 0.1f, 100.0f); // 透视矩阵
     // projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f); // 正交矩阵
     m_shader->SetMat4("projection", projection);
 }

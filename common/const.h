@@ -32,5 +32,11 @@ extern float g_DeltaTime;   // 当前帧与上一帧的时间差
 extern float g_LastFrame;   // 上一帧的时间
 extern float g_FPS;         // 帧率
 
+// ------ 鼠标事件 ------
+extern float g_Sensitivity; // 鼠标灵敏度
+extern float g_LastX;       // 鼠标位置
+extern float g_LastY;
+extern bool  g_FirstMouse;  // 鼠标第一次被捕获
+
 
 #endif /* const_h */

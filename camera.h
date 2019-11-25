@@ -9,15 +9,28 @@
 #ifndef camera_h
 #define camera_h
 
+#include <memory>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "common/define.h"
+
+
+class Camera;
+
+
+// ------ 像机相关变量 ------
+extern std::unique_ptr<Camera> g_Camera;
+extern glm::vec3 g_WorldUp;
 
 
 class Camera
 {
 public:
-    Camera() {}
+    // Constructor with vectors
+    Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f), float yaw = CAMERA_YAW, float pitch = CAMERA_PITCH, float speed = CAMERA_SPEED, float fov = CAMERA_FOV);
     
     ~Camera() {}
     
@@ -34,13 +47,13 @@ public:
     
     inline void SetCameraUp(float x, float y, float z) { m_cameraUp = glm::normalize(glm::vec3(x, y, z)); }
     
-    inline void MoveCameraForward(float deltaTime) { m_cameraPos += deltaTime * m_speed * m_cameraFront; }
+    inline void MoveCameraForward(float deltaTime) { m_cameraPos += deltaTime * m_cameraSpeed * m_cameraFront; }
     
-    inline void MoveCameraBackward(float deltaTime) { m_cameraPos -= deltaTime * m_speed * m_cameraFront; }
+    inline void MoveCameraBackward(float deltaTime) { m_cameraPos -= deltaTime * m_cameraSpeed * m_cameraFront; }
     
-    inline void MoveCameraLeftward(float deltaTime) { m_cameraPos -= deltaTime * glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * m_speed; }
+    inline void MoveCameraLeftward(float deltaTime) { m_cameraPos -= deltaTime * m_cameraRight * m_cameraSpeed; }
     
-    inline void MoveCameraRightward(float deltaTime) { m_cameraPos += deltaTime * glm::normalize(glm::cross(m_cameraFront, m_cameraUp)) * m_speed; }
+    inline void MoveCameraRightward(float deltaTime) { m_cameraPos += deltaTime * m_cameraRight * m_cameraSpeed; }
     
     inline glm::mat4 GetViewMatrix() { return m_view; }
     
@@ -48,18 +61,22 @@ public:
     
 
 private:
+    void mUpdateCameraVectors();
+    
     glm::mat4 mMyLookAt(glm::vec3 position, glm::vec3 target, glm::vec3 worldUp);
 
 private:
-    glm::vec3 m_cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f); // 摄像机的位置
-    glm::vec3 m_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f); // 摄像机的朝向
-    glm::vec3 m_cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f); // 摄像机的up向量
-    glm::mat4 m_view        = glm::mat4(1.0f);
+    glm::mat4 m_view = glm::mat4(1.0f);
+
+    glm::vec3 m_cameraPos;      // 摄像机的位置
+    glm::vec3 m_cameraFront;    // 摄像机的朝向
+    glm::vec3 m_cameraRight;    // 相机的右向量
+    glm::vec3 m_cameraUp;       // 摄像机的up向量
     
-    float m_speed = 2.5f;
-    float m_yaw = -90.0f;     // 偏航角
-    float m_pitch = 0.0f;   // 俯仰角
-    float m_FOV = 45.0f;
+    float m_cameraSpeed;
+    float m_cameraYaw;     // 偏航角
+    float m_cameraPitch;   // 俯仰角
+    float m_FOV;
 };
 
 #endif /* camera_h */

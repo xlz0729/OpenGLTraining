@@ -8,24 +8,35 @@
 
 #include "camera.h"
 
+// ------ 像机相关变量 ------
+std::unique_ptr<Camera> g_Camera;
+glm::vec3 g_WorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
+Camera::Camera(glm::vec3 position, float yaw, float pitch, float speed, float fov)
+{
+    m_cameraPos = position;
+    m_cameraYaw = yaw;
+    m_cameraPitch = pitch;
+    m_cameraSpeed = speed;
+    m_FOV = fov;
+    
+    mUpdateCameraVectors();
+}
 
 void Camera::UpdateYawPitch(float xoffset, float yoffset)
 {
-    m_yaw   += xoffset;
-    m_pitch += yoffset;
+    m_cameraYaw   += xoffset;
+    m_cameraPitch += yoffset;
     
-    if(m_pitch > 89.0f) {
-      m_pitch =  89.0f;
+    if(m_cameraPitch > 89.0f) {
+      m_cameraPitch =  89.0f;
     }
-    if(m_pitch < -89.0f) {
-      m_pitch = -89.0f;
+    if(m_cameraPitch < -89.0f) {
+      m_cameraPitch = -89.0f;
     }
     
-    glm::vec3 front;
-    front.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
-    front.y = sin(glm::radians(m_pitch));
-    front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
-    m_cameraFront = glm::normalize(front);
+    mUpdateCameraVectors();
 }
 
 void Camera::UpdateFOV(float yoffset)
@@ -41,11 +52,22 @@ void Camera::UpdateFOV(float yoffset)
     }
 }
 
+void Camera::mUpdateCameraVectors()
+{
+    glm::vec3 front;
+    front.x = cos(glm::radians(m_cameraPitch)) * cos(glm::radians(m_cameraYaw));
+    front.y = sin(glm::radians(m_cameraPitch));
+    front.z = cos(glm::radians(m_cameraPitch)) * sin(glm::radians(m_cameraYaw));
+    
+    m_cameraFront = glm::normalize(front);
+    m_cameraRight = glm::normalize(glm::cross(m_cameraFront, g_WorldUp));
+    m_cameraUp    = glm::normalize(glm::cross(m_cameraRight, m_cameraFront));
+}
+
 void Camera::UpdateViewMatrix()
 {
     m_view = glm::lookAt(m_cameraPos, m_cameraPos + m_cameraFront, m_cameraUp);
 }
-
 
 glm::mat4 Camera::mMyLookAt(glm::vec3 position, glm::vec3 target, glm::vec3 worldUp)
 {

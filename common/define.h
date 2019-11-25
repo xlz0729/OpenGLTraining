@@ -20,4 +20,19 @@ typedef unsigned int unit;
 #define WINDOW_TITLE    "Lizio Xu's window"   // Title of window
 
 
+// ------ camera attribute ------
+#define CAMERA_YAW      -90.0f  // 摄像机偏航角
+
+#define CAMERA_PITCH    0.0f    // 摄像机俯仰角
+
+#define CAMERA_SPEED    2.5     // 摄像机移动速度
+
+#define CAMERA_FOV      45.0
+
+// 默认偏航角
+extern float g_CameraPitch;       // 默认俯仰角
+extern float g_CameraSpeed;       // 摄像机的默认移动速度
+extern float g_CameraFOV;         // 摄像机的默认FOV
+
+
 #endif /* define_h */

@@ -11,8 +11,6 @@
 
 #include <iostream>
 
-#include "camera.h"
-
 
 // ------ shader attribute ------
 // Shader source's absolute path depended on your own os.
@@ -23,9 +21,6 @@ extern std::string FRAGMENT_SHADER;
 // ------ texture attribute ------
 // texture's absolute path depended on your own os.
 extern std::string TEXTURE_DIR;
-
-// ------ 主摄像机 ------
-extern std::unique_ptr<Camera> g_Camera;
 
 // ------ 帧率的相关变量 ------
 extern float g_DeltaTime;   // 当前帧与上一帧的时间差

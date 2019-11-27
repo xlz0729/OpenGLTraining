@@ -84,10 +84,9 @@ public:
     {
         g_master_camera->UpdateViewMatrix();
         
-//        for (auto unit : m_render_unit_list)
-//        {
-//            unit.UpdateData(glfwGetTime());
-//        }
+        for (auto& unit : m_render_unit_list) {
+            unit.UpdateData(glfwGetTime());
+        }
     }
     
     void RenderLoop()
@@ -102,8 +101,7 @@ public:
         
         g_render->SetViewMatrix(g_master_camera->GetViewMatrix());
         
-        for (auto unit : m_render_unit_list)
-        {
+        for (auto unit : m_render_unit_list) {
             g_render->RenderOneUnit(unit);
         }
         

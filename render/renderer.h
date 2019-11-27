@@ -12,6 +12,7 @@
 #include <math.h>
 
 #include <vector>
+#include <iostream>
 
 #include "define.h"
 #include "camera.h"
@@ -111,21 +112,21 @@ public:
     
     void RenderOneUnit(RenderUnit& unit)
     {
-        glm::mat4 transform = glm::mat4(1.0f);
-        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
-        
-        m_device->SetMat4(SHADER_TRANSFORM, transform);
-        
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, unit.GetPosition());
-        float angle = unit.GetAngle();
-        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-
-        m_device->SetMat4(SHADER_MODEL, model);
-
-//        m_device->SetMat4(SHADER_TRANSFORM, unit.GetTransformMatrix());
+//        glm::mat4 transform = glm::mat4(1.0f);
+//        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
 //
-//        m_device->SetMat4(SHADER_MODEL, unit.GetModelMatrix());
+//        m_device->SetMat4(SHADER_TRANSFORM, transform);
+//
+//        glm::mat4 model = glm::mat4(1.0f);
+//        model = glm::translate(model, unit.GetPosition());
+//        float angle = unit.GetAngle();
+//        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+//
+//        m_device->SetMat4(SHADER_MODEL, model);
+        
+        m_device->SetMat4(SHADER_TRANSFORM, unit.GetTransformMatrix());
+
+        m_device->SetMat4(SHADER_MODEL, unit.GetModelMatrix());
         
         m_device->DrawArrays(unit.GetVerticesStart(), unit.GetVerticesCount());
     }

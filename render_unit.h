@@ -73,7 +73,7 @@ public:
 
     inline unsigned int GetVerticesCount() { return m_vertices_count; }
 
-private:
+//private:
     const float*        m_vertices = nullptr;
     unsigned int        m_vertices_size = 0;
     unsigned int        m_vertices_start = 0;

@@ -10,8 +10,6 @@
 #define define_h
 
 
-typedef unsigned int unit;
-
 // ------ window attribute ------
 #define WINDOW_WIDTH    800  // Width of window
 
@@ -25,14 +23,19 @@ typedef unsigned int unit;
 
 #define CAMERA_PITCH    0.0f    // 摄像机俯仰角
 
-#define CAMERA_SPEED    2.5     // 摄像机移动速度
+#define CAMERA_SPEED    2.5f     // 摄像机移动速度
 
 #define CAMERA_FOV      45.0
 
-// 默认偏航角
-extern float g_CameraPitch;       // 默认俯仰角
-extern float g_CameraSpeed;       // 摄像机的默认移动速度
-extern float g_CameraFOV;         // 摄像机的默认FOV
+
+// ------ shader attribute ------
+#define SHADER_PROJECTION   "projection"
+
+#define SHADER_VIEW         "view"
+
+#define SHADER_MODEL        "model"
+
+#define SHADER_TRANSFORM    "transform"
 
 
 #endif /* define_h */

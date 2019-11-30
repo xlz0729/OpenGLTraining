@@ -35,7 +35,5 @@
 
 #define SHADER_MODEL        "model"
 
-#define SHADER_TRANSFORM    "transform"
-
 
 #endif /* define_h */

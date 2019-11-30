@@ -123,8 +123,6 @@ public:
 //        model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 //
 //        m_device->SetMat4(SHADER_MODEL, model);
-        
-        m_device->SetMat4(SHADER_TRANSFORM, unit.GetTransformMatrix());
 
         m_device->SetMat4(SHADER_MODEL, unit.GetModelMatrix());
         

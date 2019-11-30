@@ -50,20 +50,19 @@ public:
     
     void UpdateData(double current_time)
     {
-        m_transformm_matrix = glm::mat4(1.0f);
-        m_transformm_matrix = glm::rotate(m_transformm_matrix, (float)current_time, glm::vec3(0.0, 0.0, 1.0));
-        
         m_model_matrix = glm::mat4(1.0f);
+        
+
         m_model_matrix = glm::translate(m_model_matrix, m_position);
         m_model_matrix = glm::rotate(m_model_matrix, glm::radians(m_angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        
+        m_model_matrix = glm::rotate(m_model_matrix, (float)current_time, glm::vec3(0.0, 0.0, 1.0));
     }
     
 public:
     inline void SetAngle(float angle) { m_angle = angle; }
     
     inline float GetAngle() { return m_angle; }
-    
-    inline glm::mat4 GetTransformMatrix() { return m_transformm_matrix; }
     
     inline glm::mat4 GetModelMatrix() { return m_model_matrix; }
     
@@ -84,7 +83,6 @@ public:
     
     float       m_angle = 0;
     glm::vec3   m_position = glm::vec3(0.0f, 0.0f, 0.0f);   // 每个物体的初始位置
-    glm::mat4   m_transformm_matrix = glm::mat4(1.0f);
     glm::mat4   m_model_matrix = glm::mat4(1.0f);
 };
 
